@@ -5,7 +5,6 @@
 This project is built with 100% vanilla **HTML5**, **CSS3**, and **JavaScript (ES6+)**, with no backend or build steps required.
 
 ![DriftTrackers Screenshot](./assets/preview_github.png)
-*(Add your own screenshot here!)*
 
 ---
 
