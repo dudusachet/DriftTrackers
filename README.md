@@ -11,7 +11,7 @@ This project is built with 100% vanilla **HTML5**, **CSS3**, and **JavaScript (E
 ## ✨ Features
 
 * **Interactive Global Map:** Built with **Leaflet.js** for a fast and smooth user experience.
-* **24+ Iconic Tracks:** Features a curated list of legendary tracks from the USA, Japan, and Europe.
+* **40+ Iconic Tracks:** Features a curated list of legendary tracks from the USA, Japan, and Europe.
 * **Detailed Info Panel:** Click any track icon to open a slide-in panel displaying:
     * Track photo
     * Description and history
