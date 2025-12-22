@@ -7,21 +7,33 @@ const pistas = [
         id: 'long_beach', nome: "Streets of Long Beach", localizacao: "Long Beach, CA, EUA", 
         coordenadas: [33.7660, -118.1924],
         descricao: "Pista de rua icônica, usada para a abertura da Formula Drift. O percurso é técnico...", 
-        imagemUrl: "https://news.formulad.com/wordpress/wp-content/uploads/2025/04/Deane-Aasbo-728x485.jpg", 
+        imagemUrl: "https://news.formulad.com/wordpress/wp-content/uploads/2025/04/Deane-Aasbo-728x485.jpg",
+        imagens: [
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/1/12/LongBeachCircuit-StartFinishLine_%2833976608893%29.jpg', credit: 'formulanone (CC BY-SA 2.0)', link: 'https://commons.wikimedia.org/wiki/File:LongBeachCircuit-StartFinishLine_(33976608893).jpg' },
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/LBGP_%283544448025%29.jpg', credit: 'John Murphy (CC BY-SA 2.0)', link: 'https://commons.wikimedia.org/wiki/File:LBGP_(3544448025).jpg' }
+        ],
         ultimoEvento: "Formula Drift PRO (Round 1) - Abril 2025", ultimoVencedor: "Fredric Aasbo" 
     },
     { 
         id: 'irwindale', nome: "Irwindale Speedway", localizacao: "Irwindale, CA, EUA", 
         coordenadas: [34.1120, -117.9855],
         descricao: "Conhecida como 'A Casa do Drift', foi por muito tempo a pista da final...", 
-        imagemUrl: "https://www.pmw-magazine.com/wp-content/uploads/2017/06/Irwindale_WP.jpg", 
+        imagemUrl: "https://www.pmw-magazine.com/wp-content/uploads/2017/06/Irwindale_WP.jpg",
+        imagens: [
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/2/23/IrwindaleSpeedway.JPG', credit: 'Shinku Hisaki (CC BY-SA 3.0)', link: 'https://commons.wikimedia.org/wiki/File:IrwindaleSpeedway.JPG' },
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/FunCup_Irwindale_FormulaD_2008.jpg', credit: 'Gclough (CC BY 3.0)', link: 'https://commons.wikimedia.org/wiki/File:FunCup_Irwindale_FormulaD_2008.jpg' }
+        ],
         ultimoEvento: "Formula Drift PRO (Final Round) - 2024", ultimoVencedor: "James Deane" 
     },
     { 
         id: 'ebisu', nome: "Ebisu Circuit (Minami)", localizacao: "Nihonmatsu, Japão", 
         coordenadas: [37.6974, 140.5180],
         descricao: "A 'Meca' do drift. Um complexo com múltiplas pistas, famoso pela Minami...", 
-        imagemUrl: "https://driftmission.com/wp-content/uploads/2011/11/Ebisu-Minami01.jpg", 
+        imagemUrl: "https://driftmission.com/wp-content/uploads/2011/11/Ebisu-Minami01.jpg",
+        imagens: [
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Ebisu_Circuit_East_001.JPG', credit: 'Yones (Public Domain)', link: 'https://commons.wikimedia.org/wiki/File:Ebisu_Circuit_East_001.JPG' },
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/9/90/DSC_0005_ebisu_drifting.jpg', credit: 'Chad MacLean (CC BY 2.0)', link: 'https://commons.wikimedia.org/wiki/File:DSC_0005_ebisu_drifting.jpg' }
+        ],
         ultimoEvento: "D1GP 2025 (Round 5 & 6)", ultimoVencedor: "Ryu Nakamura" 
     },
     { 
@@ -35,7 +47,11 @@ const pistas = [
         id: 'mondello', nome: "Mondello Park", localizacao: "Co. Kildare, Irlanda", 
         coordenadas: [53.2756, -6.7573],
         descricao: "O coração do drift irlandês. Uma pista técnica...", 
-        imagemUrl: "https://scontent.fcxj3-1.fna.fbcdn.net/v/t39.30808-6/486546216_1063147889181022_8684084248450715655_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=yT-n7l-uLgsQ7kNvwGuxIn2&_nc_oc=AdkGI82qnmn_awC5pL7pFMWf43XeqRxMCFS6xWNyjk7gDbgjS4O55kCQ6VX7FKTrwRc&_nc_zt=23&_nc_ht=scontent.fcxj3-1.fna&_nc_gid=Qw-e1VTGd12fpLT4a0dyUA&oh=00_Afhp1k32XB_659-OHxRTZL_0mT5Wwtk5Y8FFnqCa28DTdg&oe=69194119", 
+        imagemUrl: "https://placehold.co/600x400/333/fff?text=Mondello+Park",
+        imagens: [
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Striker_on_trackday.JPG', credit: 'Nasty (CC BY-SA 3.0)', link: 'https://commons.wikimedia.org/wiki/File:Striker_on_trackday.JPG' },
+            { src: 'https://upload.wikimedia.org/wikipedia/commons/a/a4/Mondello_Park_track_map--International_circuit.svg', credit: 'Will Pittenger (CC BY-SA 3.0)', link: 'https://commons.wikimedia.org/wiki/File:Mondello_Park_track_map--International_circuit.svg' }
+        ],
         ultimoEvento: "Drift Masters 2025 (Round 4)", ultimoVencedor: "Piotr Wiecek" 
     },
     { 
@@ -70,7 +86,10 @@ const pistas = [
         id: 'evergreen', nome: "Evergreen Speedway", localizacao: "Monroe, WA, EUA", 
         coordenadas: [47.8545, -121.9649],
         descricao: "Uma das pistas mais antigas da Formula Drift. Famosa pelo seu 'bank'...", 
-        imagemUrl: "https://news.formulad.com/wordpress/wp-content/uploads/2019/07/Number1-600x400.jpg", 
+        imagens: [
+    'https://news.formulad.com/wordpress/wp-content/uploads/2019/07/Number1-600x400.jpg',
+    'https://pacificpublishingcompany.media.clients.ellingtoncms.com/img/photos/2024/06/11/speedway1_t670.jpg?b3f6a5d7692ccc373d56e40cf708e3fa67d9af9d'
+  ], 
         ultimoEvento: "Formula Drift PRO (Round 6) - 2025", ultimoVencedor: "Simen Olsen" 
     },
     { 
@@ -261,7 +280,11 @@ const pistas = [
             ultimoEvento: "Eventos Locais / DriftVic", 
             ultimoVencedor: "N/A" 
         },
+
+
     //-----// Brasileiras //-----//
+
+    
     { 
             id: 'ecpa', nome: "ECPA", 
             localizacao: "Piracicaba, SP, Brasil", 
@@ -312,7 +335,7 @@ const pistas = [
             localizacao: "Nova Santa Rita, RS, Brasil", 
             coordenadas: [-29.8222, -51.3200], 
             descricao: "Um dos complexos automobilísticos mais modernos do país. Sedia etapas do campeonato gaúcho e brasileiro usando partes do seu traçado técnico.", 
-            imagemUrl: "hhttps://www.rbsdirect.com.br/filestore/8/2/9/7/0/5/5_02cd7b1f5fb3b09/5507928_a8f7d639854f865.jpg?format=webp&w=700", 
+            imagemUrl: "https://www.rbsdirect.com.br/filestore/8/2/9/7/0/5/5_02cd7b1f5fb3b09/5507928_a8f7d639854f865.jpg?format=webp&w=700", 
             ultimoEvento: "Etapa Ultimate Drift (Sul)", 
             ultimoVencedor: "N/A" 
         }

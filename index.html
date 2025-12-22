@@ -13,11 +13,27 @@
 </head>
 <body>
 
-    <div id="map"></div>
+    <div id="map">
+        <div id="map-overlay" class="hidden" role="alert" aria-live="polite">
+            <div class="overlay-inner">
+                <p id="map-overlay-text">O mapa não pôde ser carregado.</p>
+                <button id="map-retry">Recarregar mapa</button>
+            </div>
+        </div>
+    </div>
 
     <div id="info-panel" class="hidden">
         <button id="close-btn">&times;</button>
-        <img id="panel-img" src="" alt="Foto da Pista">
+
+        <div class="carousel" aria-roledescription="carousel">
+            <button class="carousel-btn prev" aria-label="Imagem anterior">‹</button>
+            <div class="carousel-viewport">
+                <div class="carousel-track" role="list"></div>
+            </div>
+            <button class="carousel-btn next" aria-label="Próxima imagem">›</button>
+            <div class="carousel-dots" role="tablist" aria-label="Navegar imagens"></div>
+        </div>
+
         <h2 id="panel-title"></h2>
         <p id="panel-location"></p>
         
