@@ -47,7 +47,7 @@ const pistas = [
         id: 'mondello', nome: "Mondello Park", localizacao: "Co. Kildare, Irlanda",
         coordenadas: [53.2756, -6.7573],
         descricao: "O coração do drift irlandês. Uma pista técnica...",
-        imagemUrl: "https://placehold.co/600x400/333/fff?text=Mondello+Park",
+        imagemUrl: "",
         imagens: [
             { src: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Striker_on_trackday.JPG', credit: 'Nasty (CC BY-SA 3.0)', link: 'https://commons.wikimedia.org/wiki/File:Striker_on_trackday.JPG' },
             { src: 'https://upload.wikimedia.org/wikipedia/commons/a/a4/Mondello_Park_track_map--International_circuit.svg', credit: 'Will Pittenger (CC BY-SA 3.0)', link: 'https://commons.wikimedia.org/wiki/File:Mondello_Park_track_map--International_circuit.svg' }
@@ -110,28 +110,28 @@ const pistas = [
         id: 'okayama', nome: "Okayama International Circuit", localizacao: "Mimasaka, Japão",
         coordenadas: [34.9148, 134.2215],
         descricao: "Outro circuito de nível internacional no Japão (antiga F1)...",
-        imagemUrl: "https://pbs.twimg.com/media/FfEGY3PVQAAIyUO.jpg:large",
+        imagemUrl: "",
         ultimoEvento: "D1GP 2025 (Round 1 & 2)", ultimoVencedor: "Hideyuki Fujino"
     },
     {
         id: 'sydney', nome: "Sydney Motorsport Park", localizacao: "Eastern Creek, NSW, Austrália",
         coordenadas: [-33.8030, 150.8720],
         descricao: "A principal pista de drift da Austrália. Sedia o World Time Attack Challenge...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Sydney",
+        imagemUrl: "",
         ultimoEvento: "WTAC 2025 Drift Challenge", ultimoVencedor: "Luke Fink (Lenda Local)"
     },
     {
         id: 'road_atlanta', nome: "Road Atlanta", localizacao: "Braselton, GA, EUA",
         coordenadas: [34.1481, -83.8180],
         descricao: "Uma das etapas mais tradicionais da Formula Drift. Famosa pela subida em alta velocidade...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Road+Atlanta",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift PRO (Round 2) - Maio 2025", ultimoVencedor: "Matt Field"
     },
     {
         id: 'st_louis', nome: "World Wide Technology Raceway", localizacao: "Madison, IL, EUA",
         coordenadas: [38.6472, -90.0965],
         descricao: "Pista conhecida pelo layout rápido e fluido dentro do 'infield' de um oval da NASCAR...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=St.+Louis",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift PRO (Round 5) - 2025", ultimoVencedor: "Dylan Hughes"
     },
     {
@@ -145,49 +145,49 @@ const pistas = [
         id: 'meihan', nome: "Meihan Sportsland (C-Course)", localizacao: "Nara, Japão",
         coordenadas: [34.5685, 135.9120],
         descricao: "Uma das pistas 'raiz' mais famosas do Japão. O Traçado C é mundialmente conhecido...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Meihan",
+        imagemUrl: "",
         ultimoEvento: "D1 Lights / Evento Local", ultimoVencedor: "N/A"
     },
     {
         id: 'autopolis', nome: "Autopolis (D1 Layout)", localizacao: "Hita, Oita, Japão",
         coordenadas: [33.0450, 130.9390],
         descricao: "Uma pista de nível internacional da FIA usada pelo D1GP. O layout de drift é incrivelmente rápido...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Autopolis",
+        imagemUrl: "",
         ultimoEvento: "D1GP 2025 (Round 7 & 8)", ultimoVencedor: "Naoki Nakamura"
     },
     {
         id: 'okuibuki', nome: "Okuibuki Motor Park", localizacao: "Maibara, Japão",
         coordenadas: [35.2970, 136.4380],
         descricao: "Uma pista construída em uma estação de ski. Sedia eventos do D1GP e Formula Drift Japan...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Okuibuki",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift Japan 2025", ultimoVencedor: "Kanta Yanagida"
     },
     {
         id: 'power_park', nome: "Power Park Huvivaltio", localizacao: "Kauhava, Finlândia",
         coordenadas: [63.0040, 22.3170],
         descricao: "Uma pista de drift construída dentro de um parque de diversões!...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Power+Park",
+        imagemUrl: "",
         ultimoEvento: "Drift Masters 2025 (Round 2)", ultimoVencedor: "Lauri Heinonen"
     },
     {
         id: 'anglesey', nome: "Anglesey Circuit", localizacao: "Anglesey, País de Gales, UK",
         coordenadas: [53.1895, -4.4890],
         descricao: "Um dos circuitos mais bonitos do mundo, à beira-mar...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Anglesey",
+        imagemUrl: "",
         ultimoEvento: "British Drift Championship", ultimoVencedor: "N/A"
     },
     {
         id: 'willow_springs', nome: "Willow Springs (Balcony)", localizacao: "Rosamond, CA, EUA",
         coordenadas: [34.8725, -118.2630],
         descricao: "Uma pista de drift histórica nos EUA. O 'Balcony' é uma pista curta e técnica...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Willow+Springs",
+        imagemUrl: "",
         ultimoEvento: "Drift Matsuri / Evento Local", ultimoVencedor: "N/A"
     },
     {
         id: 'gingerman', nome: "Gingerman Raceway", localizacao: "South Haven, MI, EUA",
         coordenadas: [42.3480, -86.1380],
         descricao: "Uma pista de 'clube' que se tornou palco da Formula Drift...",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Gingerman",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift PROSPEC", ultimoVencedor: "N/A"
     },
     {
@@ -195,7 +195,7 @@ const pistas = [
         localizacao: "Wall, NJ, EUA",
         coordenadas: [40.1690, -74.0620],
         descricao: "O 'Great Wall' de Nova Jersey. Um oval inclinado clássico da Formula Drift, conhecido por suas batalhas de alta velocidade e punição para erros.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Wall+Speedway",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift PROSPEC",
         ultimoVencedor: "N/A"
     },
@@ -204,7 +204,7 @@ const pistas = [
         localizacao: "Fort Worth, TX, EUA",
         coordenadas: [33.0370, -97.2830],
         descricao: "Um 'roval' de alta velocidade usado pela Formula Drift. O traçado é conhecido por ser extremamente rápido, exigindo potência máxima e controle.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Texas+Motor+Speedway",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift PRO (Evento Passado)",
         ultimoVencedor: "N/A"
     },
@@ -213,7 +213,7 @@ const pistas = [
         localizacao: "Oyama, Japão",
         coordenadas: [35.3670, 138.9290],
         descricao: "O parque de drift dedicado dentro do complexo mundialmente famoso de Fuji. Sedia rodadas da Formula Drift Japan e D1GP em um layout técnico.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Fuji+Drift+Park",
+        imagemUrl: "",
         ultimoEvento: "Formula Drift Japan / D1GP",
         ultimoVencedor: "N/A"
     },
@@ -222,7 +222,7 @@ const pistas = [
         localizacao: "Utsunomiya, Japão",
         coordenadas: [36.9100, 139.7380],
         descricao: "Um dos circuitos 'raiz' mais icônicos do Japão, local de nascimento de muitos estilos e pilotos. Famoso por suas curvas fechadas e treinos intensos.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Nikko+Circuit",
+        imagemUrl: "",
         ultimoEvento: "D1 Lights / Eventos Locais",
         ultimoVencedor: "N/A"
     },
@@ -231,7 +231,7 @@ const pistas = [
         localizacao: "Hockenheim, Alemanha",
         coordenadas: [49.3278, 8.5655],
         descricao: "O traçado do Motodrom no famoso circuito de F1. O Drift Masters usa essa seção do estádio, criando um evento de alta velocidade e atmosfera incrível.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Hockenheimring",
+        imagemUrl: "",
         ultimoEvento: "Drift Masters (Evento Passado)",
         ultimoVencedor: "N/A"
     },
@@ -240,7 +240,7 @@ const pistas = [
         localizacao: "Kehala, Estônia",
         coordenadas: [59.3400, 26.5180],
         descricao: "Uma pista técnica e rápida no norte da Europa que se tornou uma parada popular do Drift Masters, misturando asfalto e seções de rallycross.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Kehala+Ring",
+        imagemUrl: "",
         ultimoEvento: "Drift Masters",
         ultimoVencedor: "N/A"
     },
@@ -249,7 +249,7 @@ const pistas = [
         localizacao: "Máriapócs, Hungria",
         coordenadas: [48.0180, 22.1480],
         descricao: "Uma pista húngara clássica, 'casa' de muitos eventos europeus de drift. Conhecida por seu traçado desafiador e público fanático.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Rabocsiring",
+        imagemUrl: "",
         ultimoEvento: "Drift Masters",
         ultimoVencedor: "N/A"
     },
@@ -258,7 +258,7 @@ const pistas = [
         localizacao: "Hampton Downs, Nova Zelândia",
         coordenadas: [-37.1980, 175.0580],
         descricao: "A principal pista de drift da Nova Zelândia, casa do famoso piloto 'Mad Mike' Whiddett. Sedia grandes eventos, incluindo o Mad Mike's Summer Bash.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Hampton+Downs",
+        imagemUrl: "",
         ultimoEvento: "D1NZ Championship",
         ultimoVencedor: "N/A"
     },
@@ -290,7 +290,7 @@ const pistas = [
         localizacao: "Piracicaba, SP, Brasil",
         coordenadas: [-22.6580, -47.7885],
         descricao: "Considerada uma das 'casas' do drift no Brasil. Possui um traçado travado e técnico que é um favorito dos pilotos e sedia muitas etapas de campeonatos.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=ECPA",
+        imagemUrl: "https://cdn-3.motorsport.com/images/amp/2y3W3Ko6/s1000/ultimate-drift-1.jpg",
         ultimoEvento: "Etapa Ultimate Drift",
         ultimoVencedor: "N/A"
     },
@@ -299,7 +299,7 @@ const pistas = [
         localizacao: "Tuiuti, SP, Brasil",
         coordenadas: [-22.7565, -46.7020],
         descricao: "Outra pista muito famosa e técnica, conhecida por suas curvas desafiadoras e por ser um local frequente de treinos e etapas do Ultimate Drift.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Haras+Tuiuti",
+        imagemUrl: "https://cdn.motor1.com/images/mgl/JO3K8K/s1/visao-area-do-motor-park-ht.jpg",
         ultimoEvento: "Etapa Ultimate Drift",
         ultimoVencedor: "N/A"
     },
@@ -308,7 +308,7 @@ const pistas = [
         localizacao: "Santa Luzia, MG, Brasil",
         coordenadas: [-19.7825, -43.8820],
         descricao: "Um espaço de eventos gigante que sedia as etapas mineiras. O traçado é conhecido por ser de alta velocidade e muito impressionante para o público.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Mega+Space",
+        imagemUrl: "https://megaquinta.com.br/wp-content/uploads/2024/01/ultimate-logo-7.png",
         ultimoEvento: "Etapa Ultimate Drift",
         ultimoVencedor: "N/A"
     },
@@ -317,7 +317,7 @@ const pistas = [
         localizacao: "Balneário Camboriú, SC, Brasil",
         coordenadas: [-27.1065, -48.6530],
         descricao: "Sedia as etapas catarinenses dos campeonatos. É uma pista que combina velocidade com seções técnicas em um grande complexo de entretenimento.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Speedway+BC",
+        imagemUrl: "https://s2-ge.glbimg.com/seScFGfORfPnaM0fdokcCrtK2_A=/0x0:3887x2591/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2022/7/a/fenjd6T8GqrBDHObr0Dg/dayball-diorio-bernardo-75.jpg",
         ultimoEvento: "Etapa Ultimate Drift (Sul)",
         ultimoVencedor: "N/A"
     },
@@ -326,7 +326,7 @@ const pistas = [
         localizacao: "São Paulo, SP, Brasil",
         coordenadas: [-23.7040, -46.6975],
         descricao: "A pista mais famosa do Brasil. Os eventos de drift ocorrem no 'Miolo' (Kartódromo) ou em seções adaptadas do traçado principal, como o 'S do Senna'.",
-        imagemUrl: "https://placehold.co/400x250/333/999?text=Interlagos",
+        imagemUrl: "https://racingonline.com.br/wp-content/uploads/2023/10/BetoIssa_F1_GPSP_2022_3672-scaled.jpg",
         ultimoEvento: "Super Drift Brasil / Eventos Especiais",
         ultimoVencedor: "N/A"
     },

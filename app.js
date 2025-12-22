@@ -1,5 +1,5 @@
 // --- ARQUIVO: app.js ---
-
+// Aplicação principal do Drift Map App (versão modular com ES Modules) 
 // 1. IMPORTA os dados do nosso novo arquivo
 import pistas from './tracks.js';
 
@@ -22,7 +22,7 @@ const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/
 });
 
 const map = L.map('map', {
-    layers: [satelliteLayer], 
+    layers: [satelliteLayer],
     center: [40, -5],
     zoom: 3,
     minZoom: 2,
@@ -34,7 +34,7 @@ const map = L.map('map', {
 const baseMaps = {
     "Mapa Escuro": darkMap,
     "Satélite": satelliteLayer,
-    "Mapa Claro": lightMap 
+    "Mapa Claro": lightMap
 };
 
 L.control.layers(baseMaps).addTo(map);
@@ -44,11 +44,11 @@ const mapOverlay = document.getElementById('map-overlay');
 const mapOverlayText = document.getElementById('map-overlay-text');
 const mapRetryBtn = document.getElementById('map-retry');
 
-function showMapOverlay(msg){
-    if(mapOverlayText) mapOverlayText.textContent = msg || 'O mapa não pôde ser carregado.';
-    if(mapOverlay) mapOverlay.classList.remove('hidden');
+function showMapOverlay(msg) {
+    if (mapOverlayText) mapOverlayText.textContent = msg || 'O mapa não pôde ser carregado.';
+    if (mapOverlay) mapOverlay.classList.remove('hidden');
 }
-function hideMapOverlay(){ if(mapOverlay) mapOverlay.classList.add('hidden'); }
+function hideMapOverlay() { if (mapOverlay) mapOverlay.classList.add('hidden'); }
 
 // Detecta falhas de carregamento de tiles
 if (lightMap && lightMap.on) lightMap.on('tileerror', () => showMapOverlay('Erro ao carregar camadas do mapa (OpenStreetMap).'));
@@ -82,18 +82,11 @@ const imageCache = new Map();
 const FALLBACK_SVG = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='250'><rect width='100%' height='100%' fill='#333'/><text x='50%' y='50%' fill='#999' font-size='20' text-anchor='middle' dominant-baseline='middle'>Imagem indisponível</text></svg>`;
 const FALLBACK_DATA = 'data:image/svg+xml;utf8,' + encodeURIComponent(FALLBACK_SVG);
 
-// --- Unsplash configuration ---
-// Se quiser usar o Unsplash para imagens de alta qualidade, coloque sua chave aqui.
-// Obtenha uma chave (access key) em https://unsplash.com/developers
-// IMPORTANTE: para evitar expor chaves em produção, faça as chamadas via backend em apps reais.
-const UNSPLASH_ACCESS_KEY = ''; // <-- cole sua chave aqui (opcional)
-
-
-function escapeForSvg(text){
-    return String(text).replace(/[&"'<>]/g, c => ({'&':'&amp;','"':'&quot;',"'":'&apos;','<':'&lt;','>':'&gt;'}[c]));
+function escapeForSvg(text) {
+    return String(text).replace(/[&"'<>]/g, c => ({ '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;' }[c]));
 }
 
-function makeTrackPlaceholder(pista, w=600, h=400){
+function makeTrackPlaceholder(pista, w = 600, h = 400) {
     const title = escapeForSvg(pista.nome || 'Imagem');
     const svg = `<?xml version='1.0' encoding='utf-8'?><svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><rect width='100%' height='100%' fill='#333'/><text x='50%' y='50%' fill='#ddd' font-size='28' text-anchor='middle' dominant-baseline='middle' font-family='Arial,Helvetica,sans-serif'>${title}</text></svg>`;
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
@@ -174,7 +167,7 @@ async function abrirPainel(pista) {
 let currentSlideIndex = 0;
 const carouselCache = new Map();
 
-function buildCarousel(images){
+function buildCarousel(images) {
     const track = document.querySelector('.carousel-track');
     const dots = document.querySelector('.carousel-dots');
     track.innerHTML = '';
@@ -189,7 +182,7 @@ function buildCarousel(images){
         const src = (typeof item === 'string') ? item : item.src;
         const credit = (typeof item === 'object' && item.credit) ? item.credit : null;
         img.src = src;
-        img.alt = `Foto ${i+1}` + (credit ? ` — ${credit}` : '');
+        img.alt = `Foto ${i + 1}` + (credit ? ` — ${credit}` : '');
         if (credit) img.title = credit;
         img.loading = 'lazy';
         img.decoding = 'async';
@@ -198,7 +191,7 @@ function buildCarousel(images){
 
         const dot = document.createElement('button');
         dot.className = 'carousel-dot';
-        dot.setAttribute('aria-label', `Ir para imagem ${i+1}`);
+        dot.setAttribute('aria-label', `Ir para imagem ${i + 1}`);
         dot.onclick = () => goToSlide(i);
         dots.appendChild(dot);
     });
@@ -216,7 +209,7 @@ function buildCarousel(images){
     updateCarousel();
 }
 
-function updateCarousel(){
+function updateCarousel() {
     const track = document.querySelector('.carousel-track');
     const dots = document.querySelectorAll('.carousel-dot');
     const slides = track.children.length;
@@ -226,35 +219,35 @@ function updateCarousel(){
     dots.forEach((d, i) => d.classList.toggle('active', i === currentSlideIndex));
 }
 
-function moveSlide(delta){
+function moveSlide(delta) {
     currentSlideIndex += delta;
     updateCarousel();
 }
 
-function goToSlide(index){
+function goToSlide(index) {
     currentSlideIndex = index;
     updateCarousel();
 }
 
-function keyboardHandler(e){
+function keyboardHandler(e) {
     if (e.key === 'ArrowLeft') moveSlide(-1);
     if (e.key === 'ArrowRight') moveSlide(1);
 }
 
-function enableTouchSwipe(container){
+function enableTouchSwipe(container) {
     let startX = null;
-    container.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, {passive:true});
+    container.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
     container.addEventListener('touchend', (e) => {
         if (startX === null) return;
         const endX = e.changedTouches[0].clientX;
         const dx = endX - startX;
-        if (Math.abs(dx) > 40){ if (dx > 0) moveSlide(-1); else moveSlide(1); }
+        if (Math.abs(dx) > 40) { if (dx > 0) moveSlide(-1); else moveSlide(1); }
         startX = null;
     });
 }
 
 // --- Wikimedia Commons fetch (mais focado) ---
-async function fetchCommonsImages(query, limit=6){
+async function fetchCommonsImages(query, limit = 6) {
     // Tenta várias consultas progressivamente para aumentar relevância
     const queries = [
         `intitle:"${query}"`,
@@ -266,7 +259,7 @@ async function fetchCommonsImages(query, limit=6){
 
     for (const q of queries) {
         try {
-            const api = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=${Math.max(limit,10)}&prop=pageimages&piprop=original&formatversion=2`;
+            const api = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=${Math.max(limit, 10)}&prop=pageimages&piprop=original&formatversion=2`;
             const res = await fetch(api);
             const data = await res.json();
             if (!data.query || !data.query.pages) continue;
@@ -293,13 +286,13 @@ async function fetchCommonsImages(query, limit=6){
 }
 
 // --- Unsplash fetch (opcional, com filtragem por relevância) ---
-async function fetchUnsplashImages(query, limit=6){
+async function fetchUnsplashImages(query, limit = 6) {
     if (!UNSPLASH_ACCESS_KEY) return [];
-    const queries = [ `${query} racetrack`, `${query} circuit`, `${query} drift`, query ];
+    const queries = [`${query} racetrack`, `${query} circuit`, `${query} drift`, query];
     const collected = [];
-    try{
+    try {
         for (const q of queries) {
-            const api = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=${Math.max(limit,6)}&orientation=landscape`;
+            const api = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=${Math.max(limit, 6)}&orientation=landscape`;
             const res = await fetch(api, { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } });
             if (!res.ok) continue;
             const data = await res.json();
@@ -318,7 +311,7 @@ async function fetchUnsplashImages(query, limit=6){
         const relevant = [];
         const others = [];
         for (const it of collected) {
-            const text = ((it.alt||'') + ' ' + (it.credit||'')).toLowerCase();
+            const text = ((it.alt || '') + ' ' + (it.credit || '')).toLowerCase();
             const has = terms.some(t => text.includes(t));
             (has ? relevant : others).push(it);
         }
@@ -333,18 +326,18 @@ async function fetchUnsplashImages(query, limit=6){
             if (resArr.length >= limit) break;
         }
         return resArr;
-    }catch(err){
+    } catch (err) {
         console.warn('Erro ao buscar imagens no Unsplash:', err);
         return [];
     }
 }
 
 // Busca combinada (Commons + Unsplash) e mescla deduplicando
-async function fetchImages(query, limit=8){
-    try{
+async function fetchImages(query, limit = 8) {
+    try {
         const [commonsRes, unsplashRes] = await Promise.allSettled([
-            fetchCommonsImages(query, Math.max(3, Math.floor(limit/2))),
-            fetchUnsplashImages(query, Math.max(3, Math.ceil(limit/2)))
+            fetchCommonsImages(query, Math.max(3, Math.floor(limit / 2))),
+            fetchUnsplashImages(query, Math.max(3, Math.ceil(limit / 2)))
         ]);
         const commons = commonsRes.status === 'fulfilled' ? commonsRes.value : [];
         const unsplash = unsplashRes.status === 'fulfilled' ? unsplashRes.value : [];
@@ -353,7 +346,7 @@ async function fetchImages(query, limit=8){
         // Remove duplicatas por src
         const seen = new Set();
         const result = [];
-        for(const item of combined){
+        for (const item of combined) {
             const src = item && item.src ? item.src : (typeof item === 'string' ? item : null);
             if (!src) continue;
             if (seen.has(src)) continue;
@@ -362,7 +355,7 @@ async function fetchImages(query, limit=8){
             if (result.length >= limit) break;
         }
         return result;
-    }catch(err){
+    } catch (err) {
         console.warn('Erro ao mesclar imagens:', err);
         return [];
     }
@@ -377,19 +370,19 @@ const iconSvg = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vc
 
 const driftIcon = L.icon({
     iconUrl: iconSvg,
-    iconSize: [24, 24],   
-    iconAnchor: [12, 12],  
-    popupAnchor: [0, -12], 
-    tooltipAnchor: [12, -6] 
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12],
+    tooltipAnchor: [12, -6]
 });
 
 // O array 'pistas' agora vem do 'import'
 pistas.forEach(pista => {
-    const marker = L.marker(pista.coordenadas, { 
-        icon: driftIcon 
+    const marker = L.marker(pista.coordenadas, {
+        icon: driftIcon
     }).addTo(map);
 
-    marker.bindTooltip(pista.nome); 
+    marker.bindTooltip(pista.nome);
 
     marker.on('click', () => {
         abrirPainel(pista);
