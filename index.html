@@ -3,22 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Interativo de Pistas de Drift</title>
+    <title>DriftTrackers — Mapa Mundial de Pistas de Drift</title>
+    <meta name="description" content="Mapa interativo com todas as pistas famosas de drift do mundo. Formula Drift, D1GP, Drift Masters, King of Nations, Gatebil e mais.">
 
-    <!-- Favicon: SVG principal + PNG fallback para compatibilidade -->
     <link rel="icon" href="assets/icon.jpg" type="image/svg+xml">
     <link rel="icon" href="assets/preview_github.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="assets/preview_github.png">
-    <meta name="theme-color" content="#121212">
+    <meta name="theme-color" content="#0a0a0f">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- CONTROLES SUPERIORES -->
+    <div id="controls-bar">
+        <div id="logo-area">
+            <span class="logo-icon">🏁</span>
+            <span class="logo-text">DriftTrackers</span>
+        </div>
+        <div id="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" id="search-input" placeholder="Buscar pista..." autocomplete="off">
+            <ul id="search-results" class="hidden"></ul>
+        </div>
+        <div id="track-counter">
+            <span id="counter-num">0</span>
+            <span class="counter-label">pistas</span>
+        </div>
+    </div>
+
+    <!-- FILTROS DE CAMPEONATO -->
+    <div id="filter-bar">
+        <button class="filter-chip active" data-filter="all">
+            <span class="chip-dot" style="background:#fff"></span> Todos
+        </button>
+        <button class="filter-chip" data-filter="Formula Drift">
+            <span class="chip-dot" style="background:#ff4444"></span> Formula Drift
+        </button>
+        <button class="filter-chip" data-filter="D1GP">
+            <span class="chip-dot" style="background:#ff9800"></span> D1GP
+        </button>
+        <button class="filter-chip" data-filter="Drift Masters">
+            <span class="chip-dot" style="background:#2196f3"></span> Drift Masters
+        </button>
+        <button class="filter-chip" data-filter="King of Nations">
+            <span class="chip-dot" style="background:#9c27b0"></span> King of Nations
+        </button>
+        <button class="filter-chip" data-filter="Gatebil">
+            <span class="chip-dot" style="background:#4caf50"></span> Gatebil
+        </button>
+        <button class="filter-chip" data-filter="Regional">
+            <span class="chip-dot" style="background:#78909c"></span> Regional
+        </button>
+    </div>
+
+    <!-- MAPA -->
     <div id="map">
         <div id="map-overlay" class="hidden" role="alert" aria-live="polite">
             <div class="overlay-inner">
@@ -26,8 +72,25 @@
                 <button id="map-retry">Recarregar mapa</button>
             </div>
         </div>
+
+        <!-- HUD DE TELEMETRIA -->
+        <div id="telemetry-hud">
+            <div class="hud-row">
+                <span class="hud-label">LAT / LNG</span>
+                <span class="hud-value" id="hud-coords">0.00, 0.00</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label">ALTITUDE</span>
+                <span class="hud-value" id="hud-zoom">---</span>
+            </div>
+            <div class="hud-row">
+                <span class="hud-label">ALVOS VISÍVEIS</span>
+                <span class="hud-value" id="hud-visible">0</span>
+            </div>
+        </div>
     </div>
 
+    <!-- PAINEL DE INFORMAÇÕES -->
     <div id="info-panel" class="hidden">
         <button id="close-btn">&times;</button>
 
@@ -40,6 +103,7 @@
             <div class="carousel-dots" role="tablist" aria-label="Navegar imagens"></div>
         </div>
 
+        <div id="panel-badge"></div>
         <h2 id="panel-title"></h2>
         <p id="panel-location"></p>
         
@@ -50,21 +114,38 @@
 
         <p id="panel-desc"></p>
         
-        <div id="video-container">
-            </div>
+        <a id="btn-streetview" class="btn-streetview hidden" href="#" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Explorar no Street View
+        </a>
+        
+        <div id="video-container"></div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="hidden">
+        <button id="lightbox-close">&times;</button>
+        <button id="lightbox-prev" class="lightbox-nav">‹</button>
+        <img id="lightbox-img" src="" alt="Imagem ampliada">
+        <button id="lightbox-next" class="lightbox-nav">›</button>
+        <p id="lightbox-credit"></p>
     </div>
 
 <footer id="main-footer">
     <span>© 2025 | Desenvolvido por Eduardo Sachet</span>
-    <div class="social-links">
-        <a href="https://github.com/seu-usuario-aqui" target="_blank" aria-label="GitHub">
-            <i class="fa-brands fa-github"></i>
-        </a>
-        <a href="https://linkedin.com/in/seu-usuario-aqui" target="_blank" aria-label="LinkedIn">
-            <i class="fa-brands fa-linkedin"></i>
-        </a>
-    </div>
 </footer>
+
+<!-- BOTAO ROLETAV / PISTA ALEATÓRIA -->
+<button id="btn-roulette" aria-label="Descobrir pista aleatória" title="Pista Aleatória!">🎲</button>
+
+<!-- OVERLAY DA ROLETA -->
+<div id="roulette-overlay" class="hidden">
+    <div id="roulette-text">Buscando Destino...</div>
+</div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>

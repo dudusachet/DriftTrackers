@@ -1,421 +1,473 @@
 // --- ARQUIVO: app.js ---
-// Aplicação principal do Drift Map App (versão modular com ES Modules) 
-// 1. IMPORTA os dados do nosso novo arquivo
+// DriftTrackers — Mapa Interativo de Pistas de Drift
 import pistas from './tracks.js';
 
-console.log("Drift Map App (Módulo) Iniciado. Pistas carregadas:", pistas.length);
+console.log("DriftTrackers Iniciado. Pistas carregadas:", pistas.length);
 
-// --- 2. INICIALIZAÇÃO DO MAPA ---
+// === CORES POR CAMPEONATO ===
+const CAMP_COLORS = {
+    'Formula Drift': '#ff4444',
+    'D1GP': '#ff9800',
+    'Drift Masters': '#2196f3',
+    'King of Nations': '#9c27b0',
+    'Gatebil': '#4caf50',
+    'Regional': '#78909c'
+};
+
+// === MAPA ===
 const darkMap = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>...',
+    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>',
     maxZoom: 20
 });
-
 const lightMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>...',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 20
 });
-
 const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri...',
+    attribution: 'Tiles &copy; Esri',
     maxZoom: 20
 });
 
 const map = L.map('map', {
     layers: [satelliteLayer],
-    center: [40, -5],
+    center: [30, 10],
     zoom: 3,
     minZoom: 2,
     maxZoom: 19,
-    worldCopyJump: true, // ensures markers stay visible when crossing dateline copies
-    maxBoundsViscosity: 0.8 // sticky bounds when maxBounds is set
+    worldCopyJump: true
 });
 
-const baseMaps = {
-    "Mapa Escuro": darkMap,
-    "Satélite": satelliteLayer,
-    "Mapa Claro": lightMap
-};
+L.control.layers({ "Satélite": satelliteLayer, "Mapa Escuro": darkMap, "Mapa Claro": lightMap }).addTo(map);
 
-L.control.layers(baseMaps).addTo(map);
-
-// --- Map error detection & recovery ---
+// Map error recovery
 const mapOverlay = document.getElementById('map-overlay');
-const mapOverlayText = document.getElementById('map-overlay-text');
 const mapRetryBtn = document.getElementById('map-retry');
-
-function showMapOverlay(msg) {
-    if (mapOverlayText) mapOverlayText.textContent = msg || 'O mapa não pôde ser carregado.';
-    if (mapOverlay) mapOverlay.classList.remove('hidden');
-}
+function showMapOverlay(msg) { if (mapOverlay) { document.getElementById('map-overlay-text').textContent = msg; mapOverlay.classList.remove('hidden'); } }
 function hideMapOverlay() { if (mapOverlay) mapOverlay.classList.add('hidden'); }
+satelliteLayer.on('tileerror', () => showMapOverlay('Erro ao carregar camadas satélite.'));
+map.whenReady(() => { hideMapOverlay(); setTimeout(() => map.invalidateSize(), 300); });
+if (mapRetryBtn) mapRetryBtn.addEventListener('click', () => window.location.reload());
+window.addEventListener('resize', () => setTimeout(() => map.invalidateSize(), 150));
 
-// Detecta falhas de carregamento de tiles
-if (lightMap && lightMap.on) lightMap.on('tileerror', () => showMapOverlay('Erro ao carregar camadas do mapa (OpenStreetMap).'));
-if (satelliteLayer && satelliteLayer.on) satelliteLayer.on('tileerror', () => showMapOverlay('Erro ao carregar camadas satélite.'));
-
-// Quando o mapa estiver pronto, tenta corrigir render e esconde overlay
-map.whenReady(() => {
-    hideMapOverlay();
-    setTimeout(() => map.invalidateSize(), 250);
-    setTimeout(() => map.invalidateSize(), 1000);
-});
-
-// Permite recarregar a página ao clicar em "Recarregar mapa"
-if (mapRetryBtn) mapRetryBtn.addEventListener('click', () => { hideMapOverlay(); window.location.reload(); });
-
-// Ajusta tamanho do mapa em resize para prevenir artefatos
-window.addEventListener('resize', () => { setTimeout(() => map.invalidateSize(), 150); });
-
-// --- 3. REFERÊNCIAS DO PAINEL (DOM) ---
+// === DOM REFS ===
 const infoPanel = document.getElementById('info-panel');
-const panelImg = document.getElementById('panel-img');
 const panelTitle = document.getElementById('panel-title');
 const panelLocation = document.getElementById('panel-location');
 const panelDesc = document.getElementById('panel-desc');
-const closeBtn = document.getElementById('close-btn');
 const panelEvent = document.getElementById('panel-event');
 const panelWinner = document.getElementById('panel-winner');
+const panelBadge = document.getElementById('panel-badge');
+const closeBtn = document.getElementById('close-btn');
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+const counterNum = document.getElementById('counter-num');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxCredit = document.getElementById('lightbox-credit');
 
-// Cache simples em memória para evitar re-downloads durante a sessão
-const imageCache = new Map();
-const FALLBACK_SVG = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='250'><rect width='100%' height='100%' fill='#333'/><text x='50%' y='50%' fill='#999' font-size='20' text-anchor='middle' dominant-baseline='middle'>Imagem indisponível</text></svg>`;
-const FALLBACK_DATA = 'data:image/svg+xml;utf8,' + encodeURIComponent(FALLBACK_SVG);
+// Novas features
+const btnStreetView = document.getElementById('btn-streetview');
+const hudCoords = document.getElementById('hud-coords');
+const hudZoom = document.getElementById('hud-zoom');
+const hudVisible = document.getElementById('hud-visible');
+const btnRoulette = document.getElementById('btn-roulette');
+const rouletteOverlay = document.getElementById('roulette-overlay');
+const rouletteText = document.getElementById('roulette-text');
 
-function escapeForSvg(text) {
-    return String(text).replace(/[&"'<>]/g, c => ({ '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;' }[c]));
+// === MARCADORES RADAR PULSANTES ===
+function createColorIcon(color) {
+    const html = `<div class="radar-marker" style="--marker-color: ${color}">
+        <div class="radar-core"></div>
+        <div class="radar-ring"></div>
+    </div>`;
+    return L.divIcon({
+        html: html,
+        className: 'custom-div-icon',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12]
+    });
 }
 
-function makeTrackPlaceholder(pista, w = 600, h = 400) {
-    const title = escapeForSvg(pista.nome || 'Imagem');
-    const svg = `<?xml version='1.0' encoding='utf-8'?><svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><rect width='100%' height='100%' fill='#333'/><text x='50%' y='50%' fill='#ddd' font-size='28' text-anchor='middle' dominant-baseline='middle' font-family='Arial,Helvetica,sans-serif'>${title}</text></svg>`;
-    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+const markerIcons = {};
+for (const [camp, color] of Object.entries(CAMP_COLORS)) {
+    markerIcons[camp] = createColorIcon(color);
 }
 
-// --- 4. FUNÇÕES DE INTERAÇÃO ---
+// Store markers for filtering
+const allMarkers = [];
+let activeFilter = 'all';
+
+pistas.forEach(pista => {
+    const color = CAMP_COLORS[pista.campeonato] || '#78909c';
+    const icon = markerIcons[pista.campeonato] || markerIcons['Regional'];
+    
+    const marker = L.marker(pista.coordenadas, { icon })
+        .addTo(map)
+        .bindTooltip(pista.nome, { direction: 'top', offset: [0, -35] });
+    
+    marker.on('click', () => {
+        map.flyTo(pista.coordenadas, Math.max(map.getZoom(), 8), { duration: 0.8 });
+        abrirPainel(pista);
+    });
+    
+    allMarkers.push({ marker, pista });
+});
+
+// Update counter and HUD
+function updateCounter() {
+    const visible = allMarkers.filter(m => map.hasLayer(m.marker)).length;
+    if (counterNum) counterNum.textContent = visible;
+    if (hudVisible) hudVisible.textContent = visible;
+}
+updateCounter();
+
+// === HUD DE TELEMETRIA ===
+function updateHUD() {
+    if (!hudCoords || !hudZoom) return;
+    const center = map.getCenter();
+    hudCoords.textContent = `${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`;
+    hudZoom.textContent = `${map.getZoom().toFixed(1)}x`;
+}
+map.on('move', updateHUD);
+map.on('zoom', updateHUD);
+updateHUD();
+
+// === ROLETA DE PISTAS (ALEATÓRIA) ===
+if (btnRoulette && rouletteOverlay && rouletteText) {
+    btnRoulette.addEventListener('click', () => {
+        if (pistas.length === 0) return;
+        
+        // Esconde menu e painel se abertos
+        infoPanel.classList.add('hidden');
+        searchResults.classList.add('hidden');
+        
+        rouletteOverlay.classList.remove('hidden');
+        
+        let laps = 0;
+        const maxLaps = 20;
+        let speed = 50;
+        
+        function spin() {
+            const randomPista = pistas[Math.floor(Math.random() * pistas.length)];
+            rouletteText.textContent = randomPista.nome.toUpperCase();
+            
+            laps++;
+            if (laps < maxLaps) {
+                speed += 10; // desacelera aos poucos
+                setTimeout(spin, speed);
+            } else {
+                // Sorteio Final
+                rouletteText.style.color = 'var(--accent)';
+                setTimeout(() => {
+                    rouletteOverlay.classList.add('hidden');
+                    rouletteText.style.color = '#fff';
+                    map.flyTo(randomPista.coordenadas, 14, { duration: 2.5, easeLinearity: 0.25 });
+                    
+                    // Abre o painel após o voo chegar
+                    map.once('moveend', () => {
+                        abrirPainel(randomPista);
+                    });
+                }, 1000);
+            }
+        }
+        spin();
+    });
+}
+
+// === FILTROS ===
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        
+        allMarkers.forEach(({ marker, pista }) => {
+            if (activeFilter === 'all' || pista.campeonato === activeFilter) {
+                if (!map.hasLayer(marker)) marker.addTo(map);
+            } else {
+                if (map.hasLayer(marker)) map.removeLayer(marker);
+            }
+        });
+        updateCounter();
+    });
+});
+
+// === BUSCA ===
+searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    if (query.length < 2) { searchResults.classList.add('hidden'); return; }
+    
+    const matches = pistas.filter(p =>
+        p.nome.toLowerCase().includes(query) ||
+        p.localizacao.toLowerCase().includes(query) ||
+        p.campeonato.toLowerCase().includes(query)
+    ).slice(0, 8);
+    
+    if (matches.length === 0) { searchResults.classList.add('hidden'); return; }
+    
+    searchResults.innerHTML = matches.map((p, index) => {
+        const color = CAMP_COLORS[p.campeonato] || '#78909c';
+        const delay = index * 0.05; // Cascata
+        return `<li data-id="${p.id}" class="staggered-item" style="animation-delay: ${delay}s">
+            <span class="sr-name">${p.nome}</span>
+            <span class="sr-loc">${p.localizacao}</span>
+            <span class="sr-badge" style="background:${color}">${p.campeonato}</span>
+        </li>`;
+    }).join('');
+    searchResults.classList.remove('hidden');
+    
+    searchResults.querySelectorAll('li').forEach(li => {
+        li.addEventListener('click', () => {
+            const pista = pistas.find(p => p.id === li.dataset.id);
+            if (pista) {
+                map.flyTo(pista.coordenadas, 12, { duration: 1 });
+                abrirPainel(pista);
+                searchInput.value = '';
+                searchResults.classList.add('hidden');
+            }
+        });
+    });
+});
+
+// Close search on click outside
+document.addEventListener('click', e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.add('hidden');
+    }
+});
+
+// === PAINEL ===
+let currentSlideIndex = 0;
+let currentImages = [];
+
 async function abrirPainel(pista) {
-    // Atualiza textos imediatamente
     panelTitle.textContent = pista.nome;
     panelLocation.textContent = pista.localizacao;
     panelDesc.textContent = pista.descricao;
     panelEvent.textContent = pista.ultimoEvento;
     panelWinner.textContent = pista.ultimoVencedor;
-
+    
+    // Badge
+    const color = CAMP_COLORS[pista.campeonato] || '#78909c';
+    panelBadge.textContent = pista.campeonato;
+    panelBadge.style.background = color + '22';
+    panelBadge.style.color = color;
+    panelBadge.style.border = `1px solid ${color}44`;
+    
+    // Botão Street View
+    if (btnStreetView) {
+        btnStreetView.classList.remove('hidden');
+        // Usar api do google maps para abrir coords exatas
+        const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pista.coordenadas[0]},${pista.coordenadas[1]}`;
+        btnStreetView.href = url;
+    }
+    
+    // Carousel
     const carousel = document.querySelector('.carousel');
     const track = carousel.querySelector('.carousel-track');
     const dots = carousel.querySelector('.carousel-dots');
     const prevBtn = carousel.querySelector('.carousel-btn.prev');
     const nextBtn = carousel.querySelector('.carousel-btn.next');
-
-    // Limpa o estado antigo
+    
     track.innerHTML = '';
     dots.innerHTML = '';
     currentSlideIndex = 0;
-
-    // Indicador de loading: aplicar classe ao container
-    carousel.classList.add('loading');
-
-    // Prioriza imagens definidas manualmente em `tracks.js` (se existir)
-    let images = carouselCache.get(pista.id);
-    if (!images) {
-        if (Array.isArray(pista.imagens) && pista.imagens.length > 0) {
-            images = pista.imagens.map(s => (typeof s === 'string' ? { src: s } : s));
-        } else if (pista.imagemUrl) {
-            images = [{ src: pista.imagemUrl }];
-        } else {
-            // busca unificada (Unsplash + Commons) com termos adicionais
-            images = await fetchImages(pista.nome, 8);
+    
+    currentImages = pista.imagens || [];
+    
+    // Se a pista não tem imagens definidas, ou as URLs estão falhando, buscamos dinamicamente
+    if (currentImages.length === 0) {
+        // Indicador de carregamento
+        carousel.classList.add('loading');
+        
+        try {
+            // Em vez de busca genérica que traz lixo (ex: livros sobre "drift"), forçamos busca por frase exata
+            let hasRaceKeywords = /(circuit|speedway|raceway|park|ring|motor)/i.test(pista.nome);
+            
+            // Tentativa 1: Nome exato, forçando como frase entre aspas
+            let fetched = await fetchCommonsImages(`"${pista.nome}"`, 3);
+            
+            // Tentativa 2: Nome exato + campeonato
+            if (!fetched || fetched.length === 0) {
+                fetched = await fetchCommonsImages(`"${pista.nome}" ${pista.campeonato}`, 3);
+            }
+            
+            // Tentativa 3: Se não tiver keywords de corrida no nome, tenta com "circuit" ou "speedway"
+            if (!fetched || fetched.length === 0) {
+                if (!hasRaceKeywords) {
+                    fetched = await fetchCommonsImages(`"${pista.nome}" circuit`, 3);
+                    if (!fetched || fetched.length === 0) {
+                        fetched = await fetchCommonsImages(`"${pista.nome}" speedway`, 3);
+                    }
+                }
+            }
+            
+            if (fetched && fetched.length > 0) currentImages = fetched;
+        } catch (e) {
+            console.error("Erro ao buscar imagens:", e);
         }
-
-        if (!images || images.length === 0) {
-            const fallback = imageCache.get(pista.id) || makeTrackPlaceholder(pista, 600, 400);
-            images = [fallback];
-        }
-        carouselCache.set(pista.id, images);
+        
+        carousel.classList.remove('loading');
     }
-
-    buildCarousel(images);
-
-    // esconder setas se houver apenas uma imagem (acessibilidade: remove do tab order)
-    const hasMultiple = images && images.length > 1;
-    if (prevBtn) {
-        prevBtn.style.display = hasMultiple ? '' : 'none';
-        prevBtn.setAttribute('aria-hidden', hasMultiple ? 'false' : 'true');
-        prevBtn.tabIndex = hasMultiple ? 0 : -1;
-        prevBtn.onclick = hasMultiple ? () => moveSlide(-1) : null;
+    
+    if (currentImages.length === 0) {
+        // Fallback placeholder se realmente não encontrar nada
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#1a1a2e;color:#555;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span style="margin-top:8px;font-size:0.8rem;">Sem imagem disponível</span></div>`;
+        track.appendChild(slide);
+    } else {
+        currentImages.forEach((img, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `
+                <img src="${img.src}" alt="Foto ${i+1} — ${img.credit || ''}" loading="lazy" 
+                     onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;background:#1a1a2e;color:#555;font-size:0.8rem;\\'>Imagem indisponível</div>'">
+                ${img.credit ? `<span class="img-credit">${img.credit}</span>` : ''}`;
+            slide.addEventListener('click', () => openLightbox(i));
+            track.appendChild(slide);
+            
+            if (currentImages.length > 1) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', `Imagem ${i+1}`);
+                dot.addEventListener('click', () => goToSlide(i));
+                dots.appendChild(dot);
+            }
+        });
     }
-    if (nextBtn) {
-        nextBtn.style.display = hasMultiple ? '' : 'none';
-        nextBtn.setAttribute('aria-hidden', hasMultiple ? 'false' : 'true');
-        nextBtn.tabIndex = hasMultiple ? 0 : -1;
-        nextBtn.onclick = hasMultiple ? () => moveSlide(1) : null;
-    }
-
-    // teclado
+    
+    const hasMultiple = currentImages.length > 1;
+    if (prevBtn) { prevBtn.style.display = hasMultiple ? '' : 'none'; prevBtn.onclick = hasMultiple ? () => moveSlide(-1) : null; }
+    if (nextBtn) { nextBtn.style.display = hasMultiple ? '' : 'none'; nextBtn.onclick = hasMultiple ? () => moveSlide(1) : null; }
+    
     document.addEventListener('keydown', keyboardHandler);
-
-    // touch swipe
     enableTouchSwipe(carousel);
-
-    // remove loading
-    carousel.classList.remove('loading');
-
+    
     infoPanel.classList.remove('hidden');
 }
 
-// --- Carousel helpers ---
-let currentSlideIndex = 0;
-const carouselCache = new Map();
+// Carousel navigation
+function moveSlide(dir) {
+    if (currentImages.length <= 1) return;
+    currentSlideIndex = (currentSlideIndex + dir + currentImages.length) % currentImages.length;
+    updateCarousel();
+}
 
-function buildCarousel(images) {
-    const track = document.querySelector('.carousel-track');
-    const dots = document.querySelector('.carousel-dots');
-    track.innerHTML = '';
-    dots.innerHTML = '';
-
-    images.forEach((item, i) => {
-        const slide = document.createElement('div');
-        slide.className = 'carousel-slide';
-        slide.setAttribute('role', 'listitem');
-        const img = document.createElement('img');
-        // item pode ser string (src) ou objeto { src, credit, link }
-        const src = (typeof item === 'string') ? item : item.src;
-        const credit = (typeof item === 'object' && item.credit) ? item.credit : null;
-        img.src = src;
-        img.alt = `Foto ${i + 1}` + (credit ? ` — ${credit}` : '');
-        if (credit) img.title = credit;
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        slide.appendChild(img);
-        track.appendChild(slide);
-
-        const dot = document.createElement('button');
-        dot.className = 'carousel-dot';
-        dot.setAttribute('aria-label', `Ir para imagem ${i + 1}`);
-        dot.onclick = () => goToSlide(i);
-        dots.appendChild(dot);
-    });
-
-    // Hide dots if only one image (accessibility: remove from tab order)
-    const hasMultiple = images && images.length > 1;
-    if (dots) {
-        dots.style.display = hasMultiple ? '' : 'none';
-        dots.setAttribute('aria-hidden', hasMultiple ? 'false' : 'true');
-        const dotButtons = dots.querySelectorAll('.carousel-dot');
-        dotButtons.forEach(d => d.tabIndex = hasMultiple ? 0 : -1);
-    }
-
-    // set initial active
+function goToSlide(i) {
+    currentSlideIndex = i;
     updateCarousel();
 }
 
 function updateCarousel() {
     const track = document.querySelector('.carousel-track');
-    const dots = document.querySelectorAll('.carousel-dot');
-    const slides = track.children.length;
-    if (slides === 0) return;
-    currentSlideIndex = ((currentSlideIndex % slides) + slides) % slides;
     track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === currentSlideIndex));
-}
-
-function moveSlide(delta) {
-    currentSlideIndex += delta;
-    updateCarousel();
-}
-
-function goToSlide(index) {
-    currentSlideIndex = index;
-    updateCarousel();
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlideIndex));
 }
 
 function keyboardHandler(e) {
+    if (e.key === 'Escape') fecharPainel();
     if (e.key === 'ArrowLeft') moveSlide(-1);
     if (e.key === 'ArrowRight') moveSlide(1);
 }
 
-function enableTouchSwipe(container) {
-    let startX = null;
-    container.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-    container.addEventListener('touchend', (e) => {
-        if (startX === null) return;
-        const endX = e.changedTouches[0].clientX;
-        const dx = endX - startX;
-        if (Math.abs(dx) > 40) { if (dx > 0) moveSlide(-1); else moveSlide(1); }
-        startX = null;
-    });
-}
-
-// --- Wikimedia Commons fetch (mais focado) ---
-async function fetchCommonsImages(query, limit = 6) {
-    // Tenta várias consultas progressivamente para aumentar relevância
-    const queries = [
-        `intitle:"${query}"`,
-        `${query} racetrack`,
-        `${query} circuit`,
-        `${query} drift`,
-        `${query}`
-    ];
-
-    for (const q of queries) {
-        try {
-            const api = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=${Math.max(limit, 10)}&prop=pageimages&piprop=original&formatversion=2`;
-            const res = await fetch(api);
-            const data = await res.json();
-            if (!data.query || !data.query.pages) continue;
-            const pages = data.query.pages;
-            // Prefer páginas cujo título contém o nome da pista (mais relevantes)
-            const matched = pages.filter(p => p.title && p.title.toLowerCase().includes(query.toLowerCase()));
-            const chosen = (matched.length ? matched : pages).map(p => ({ src: p.original && p.original.source, credit: p.title })).filter(i => i.src);
-            // Dedup e retorna máximo 'limit'
-            const seen = new Set();
-            const result = [];
-            for (const item of chosen) {
-                if (seen.has(item.src)) continue;
-                seen.add(item.src);
-                result.push(item);
-                if (result.length >= limit) break;
-            }
-            if (result.length) return result;
-        } catch (err) {
-            console.warn('Erro ao buscar imagens no Commons (consulta:', q, '):', err);
-            // continuar para próxima consulta
-        }
-    }
-    return [];
-}
-
-// --- Unsplash fetch (opcional, com filtragem por relevância) ---
-async function fetchUnsplashImages(query, limit = 6) {
-    if (!UNSPLASH_ACCESS_KEY) return [];
-    const queries = [`${query} racetrack`, `${query} circuit`, `${query} drift`, query];
-    const collected = [];
-    try {
-        for (const q of queries) {
-            const api = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=${Math.max(limit, 6)}&orientation=landscape`;
-            const res = await fetch(api, { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } });
-            if (!res.ok) continue;
-            const data = await res.json();
-            if (!data.results) continue;
-
-            for (const r of data.results) {
-                const item = { src: r.urls.regular, credit: r.user && `${r.user.name} (Unsplash)`, alt: r.alt_description || r.description };
-                collected.push(item);
-            }
-            // pare cedo se já coletamos suficientes
-            if (collected.length >= limit) break;
-        }
-
-        // Filtrar e priorizar resultados que pareçam mais relevantes (alt/descrição contém o nome)
-        const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-        const relevant = [];
-        const others = [];
-        for (const it of collected) {
-            const text = ((it.alt || '') + ' ' + (it.credit || '')).toLowerCase();
-            const has = terms.some(t => text.includes(t));
-            (has ? relevant : others).push(it);
-        }
-        const merged = [...relevant, ...others];
-        // Dedup por src e limitar
-        const seen = new Set();
-        const resArr = [];
-        for (const it of merged) {
-            if (seen.has(it.src)) continue;
-            seen.add(it.src);
-            resArr.push(it);
-            if (resArr.length >= limit) break;
-        }
-        return resArr;
-    } catch (err) {
-        console.warn('Erro ao buscar imagens no Unsplash:', err);
-        return [];
-    }
-}
-
-// Busca combinada (Commons + Unsplash) e mescla deduplicando
-async function fetchImages(query, limit = 8) {
-    try {
-        const [commonsRes, unsplashRes] = await Promise.allSettled([
-            fetchCommonsImages(query, Math.max(3, Math.floor(limit / 2))),
-            fetchUnsplashImages(query, Math.max(3, Math.ceil(limit / 2)))
-        ]);
-        const commons = commonsRes.status === 'fulfilled' ? commonsRes.value : [];
-        const unsplash = unsplashRes.status === 'fulfilled' ? unsplashRes.value : [];
-        // Prioriza Unsplash (mais relevantes/qualidade) e em seguida Commons
-        const combined = [...unsplash, ...commons];
-        // Remove duplicatas por src
-        const seen = new Set();
-        const result = [];
-        for (const item of combined) {
-            const src = item && item.src ? item.src : (typeof item === 'string' ? item : null);
-            if (!src) continue;
-            if (seen.has(src)) continue;
-            seen.add(src);
-            result.push(item);
-            if (result.length >= limit) break;
-        }
-        return result;
-    } catch (err) {
-        console.warn('Erro ao mesclar imagens:', err);
-        return [];
-    }
+function enableTouchSwipe(el) {
+    let startX = 0;
+    el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    el.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) moveSlide(diff > 0 ? 1 : -1);
+    }, { passive: true });
 }
 
 function fecharPainel() {
     infoPanel.classList.add('hidden');
+    document.removeEventListener('keydown', keyboardHandler);
+    closeLightbox();
 }
-
-// --- 5. CRIAR MARCADORES E EVENTOS ---
-const iconSvg = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZHRoPSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI5IiBmaWxsPSIjNGE5MGUyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg==';
-
-const driftIcon = L.icon({
-    iconUrl: iconSvg,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -12],
-    tooltipAnchor: [12, -6]
-});
-
-// O array 'pistas' agora vem do 'import'
-pistas.forEach(pista => {
-    const marker = L.marker(pista.coordenadas, {
-        icon: driftIcon
-    }).addTo(map);
-
-    marker.bindTooltip(pista.nome);
-
-    marker.on('click', () => {
-        abrirPainel(pista);
-    });
-});
-
-// Define limites de pan com base nas pistas para evitar que marcadores desapareçam quando o usuário arrasta muito para os lados
-try {
-    const allCoords = pistas.map(p => p.coordenadas).filter(Boolean);
-    if (allCoords.length > 0) {
-        const bounds = L.latLngBounds(allCoords);
-        const padded = bounds.pad(0.6);
-        map.setMaxBounds(padded);
-        // reforça viscosidade caso algum mapa inicial tenha sido criado sem a opção
-        map.options.maxBoundsViscosity = 0.8;
-    }
-} catch (err) {
-    console.warn('Não foi possível definir limites do mapa (maxBounds):', err);
-}
-
-// Prefetch suave das primeiras imagens para melhorar tempo percebido ao abrir o painel.
-// Executa após 2s para não competir com recursos críticos de inicialização.
-setTimeout(() => {
-    const PREFETCH_COUNT = 3;
-    pistas.slice(0, PREFETCH_COUNT).forEach(p => {
-        if (!imageCache.has(p.id)) {
-            const pre = new Image();
-            pre.decoding = 'async';
-            pre.src = p.imagemUrl;
-            pre.onload = () => imageCache.set(p.id, p.imagemUrl);
-        }
-    });
-}, 2000);
 
 closeBtn.addEventListener('click', fecharPainel);
-map.on('click', fecharPainel);
+
+// === LIGHTBOX ===
+let lightboxIndex = 0;
+
+function openLightbox(index) {
+    lightboxIndex = index;
+    updateLightbox();
+    lightbox.classList.remove('hidden');
+    document.addEventListener('keydown', lightboxKeyHandler);
+}
+
+function closeLightbox() {
+    lightbox.classList.add('hidden');
+    document.removeEventListener('keydown', lightboxKeyHandler);
+}
+
+function updateLightbox() {
+    const img = currentImages[lightboxIndex];
+    if (!img) return;
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.credit || 'Imagem da pista';
+    lightboxCredit.textContent = img.credit || '';
+    
+    const hasMultiple = currentImages.length > 1;
+    document.getElementById('lightbox-prev').style.display = hasMultiple ? '' : 'none';
+    document.getElementById('lightbox-next').style.display = hasMultiple ? '' : 'none';
+}
+
+function lightboxKeyHandler(e) {
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') { lightboxIndex = (lightboxIndex - 1 + currentImages.length) % currentImages.length; updateLightbox(); }
+    if (e.key === 'ArrowRight') { lightboxIndex = (lightboxIndex + 1) % currentImages.length; updateLightbox(); }
+}
+
+document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+document.getElementById('lightbox-prev').addEventListener('click', () => { lightboxIndex = (lightboxIndex - 1 + currentImages.length) % currentImages.length; updateLightbox(); });
+document.getElementById('lightbox-next').addEventListener('click', () => { lightboxIndex = (lightboxIndex + 1) % currentImages.length; updateLightbox(); });
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+// === WIKIMEDIA COMMONS API FETCHER ===
+const commonsCache = new Map();
+
+async function fetchCommonsImages(query, limit = 3) {
+    if (commonsCache.has(query)) return commonsCache.get(query);
+    
+    if (!query || query.trim() === '""' || query.trim() === '') return null;
+
+    // Use a API de busca do Wikimedia Commons
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=${limit}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=800&format=json&origin=*`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data && data.query && data.query.pages) {
+            const pages = Object.values(data.query.pages);
+            const images = pages.map(page => {
+                if (!page.imageinfo || !page.imageinfo[0]) return null;
+                const info = page.imageinfo[0];
+                let credit = 'Wikimedia Commons';
+                if (info.extmetadata) {
+                    const artist = info.extmetadata.Artist ? info.extmetadata.Artist.value.replace(/<[^>]*>?/gm, '') : '';
+                    if (artist) credit = artist;
+                }
+                return {
+                    src: info.thumburl || info.url,
+                    credit: credit,
+                    link: page.imageinfo[0].descriptionurl
+                };
+            }).filter(img => img !== null);
+            
+            if (images.length > 0) {
+                commonsCache.set(query, images);
+                return images;
+            }
+        }
+    } catch (e) {
+        console.error("Wikimedia fetch error for", query, e);
+    }
+    
+    commonsCache.set(query, null);
+    return null;
+}
