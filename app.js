@@ -1,7 +1,4 @@
-// --- ARQUIVO: app.js ---
 // DriftTrackers — Mapa Interativo de Pistas de Drift
-import pistas from './tracks.js';
-
 console.log("DriftTrackers Iniciado. Pistas carregadas:", pistas.length);
 
 // === CORES POR CAMPEONATO ===
@@ -58,6 +55,11 @@ const panelEvent = document.getElementById('panel-event');
 const panelWinner = document.getElementById('panel-winner');
 const panelBadge = document.getElementById('panel-badge');
 const closeBtn = document.getElementById('close-btn');
+
+// Novas features Actions
+const btnFavorite = document.getElementById('btn-favorite');
+const btnShare = document.getElementById('btn-share');
+
 const searchInput = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 const counterNum = document.getElementById('counter-num');
@@ -73,6 +75,68 @@ const hudVisible = document.getElementById('hud-visible');
 const btnRoulette = document.getElementById('btn-roulette');
 const rouletteOverlay = document.getElementById('roulette-overlay');
 const rouletteText = document.getElementById('roulette-text');
+const weatherWidget = document.getElementById('weather-widget');
+const weatherIcon = document.getElementById('weather-icon');
+const weatherTemp = document.getElementById('weather-temp');
+const weatherDesc = document.getElementById('weather-desc');
+
+// === GARAGEM (FAVORITOS LOCAL STORAGE) ===
+let favoriteTracks = JSON.parse(localStorage.getItem('driftFavorites')) || [];
+function toggleFavorite(id) {
+    if (favoriteTracks.includes(id)) {
+        favoriteTracks = favoriteTracks.filter(f => f !== id);
+    } else {
+        favoriteTracks.push(id);
+    }
+    localStorage.setItem('driftFavorites', JSON.stringify(favoriteTracks));
+    updateFavoriteButton(id);
+    
+    Toastify({
+        text: favoriteTracks.includes(id) ? "Adicionado aos Favoritos 🌟" : "Removido dos Favoritos",
+        duration: 2500, gravity: "bottom", position: "center", backgroundColor: "rgba(16,24,40,0.95)"
+    }).showToast();
+    
+    // Se estivermos visualizando a lista de favoritos, atualiza o mapa
+    if (activeFilter === 'Favorites') {
+        applyFilter('Favorites');
+    }
+}
+
+function updateFavoriteButton(id) {
+    if (!btnFavorite) return;
+    if (favoriteTracks.includes(id)) {
+        btnFavorite.classList.add('active', 'fav');
+        btnFavorite.innerHTML = ''; // Usa o content :after do CSS (coracao vermelho)
+    } else {
+        btnFavorite.classList.remove('active', 'fav');
+        btnFavorite.innerHTML = '🤍';
+    }
+}
+btnFavorite.addEventListener('click', () => {
+    if (baseOpenedTrackId) toggleFavorite(baseOpenedTrackId);
+});
+
+// === DEEP LINKING (COMPARTILHAMENTO) ===
+let baseOpenedTrackId = null;
+
+btnShare.addEventListener('click', async () => {
+    if (!baseOpenedTrackId) return;
+    
+    // Cria a nova URL magica
+    const url = new URL(window.location);
+    url.searchParams.set('track', baseOpenedTrackId);
+    
+    try {
+        await navigator.clipboard.writeText(url.toString());
+        Toastify({
+            text: "🔗 Link mágico copiado!",
+            duration: 3000, gravity: "bottom", position: "center",
+            style: { borderLeft: "4px solid #4CAF50" }
+        }).showToast();
+    } catch (err) {
+        console.error('Falha ao copiar:', err);
+    }
+});
 
 // === MARCADORES RADAR PULSANTES ===
 function createColorIcon(color) {
@@ -176,20 +240,29 @@ if (btnRoulette && rouletteOverlay && rouletteText) {
 }
 
 // === FILTROS ===
+function applyFilter(filterGroup) {
+    activeFilter = filterGroup;
+    allMarkers.forEach(({ marker, pista }) => {
+        let shouldShow = false;
+        
+        if (filterGroup === 'all') shouldShow = true;
+        else if (filterGroup === 'Favorites') shouldShow = favoriteTracks.includes(pista.id);
+        else shouldShow = (pista.campeonato === filterGroup);
+        
+        if (shouldShow) {
+            if (!map.hasLayer(marker)) marker.addTo(map);
+        } else {
+            if (map.hasLayer(marker)) map.removeLayer(marker);
+        }
+    });
+    updateCounter();
+}
+
 document.querySelectorAll('.filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
-        activeFilter = chip.dataset.filter;
-        
-        allMarkers.forEach(({ marker, pista }) => {
-            if (activeFilter === 'all' || pista.campeonato === activeFilter) {
-                if (!map.hasLayer(marker)) marker.addTo(map);
-            } else {
-                if (map.hasLayer(marker)) map.removeLayer(marker);
-            }
-        });
-        updateCounter();
+        applyFilter(chip.dataset.filter);
     });
 });
 
@@ -242,6 +315,9 @@ let currentSlideIndex = 0;
 let currentImages = [];
 
 async function abrirPainel(pista) {
+    baseOpenedTrackId = pista.id;
+    updateFavoriteButton(pista.id);
+    
     panelTitle.textContent = pista.nome;
     panelLocation.textContent = pista.localizacao;
     panelDesc.textContent = pista.descricao;
@@ -258,9 +334,44 @@ async function abrirPainel(pista) {
     // Botão Street View
     if (btnStreetView) {
         btnStreetView.classList.remove('hidden');
-        // Usar api do google maps para abrir coords exatas
-        const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${pista.coordenadas[0]},${pista.coordenadas[1]}`;
+        // Usar link genérico para abrir as coordenadas da pista em 16x de zoom ativando a camada "layer=c" (Street View). 
+        // Isso previne forçar "map_action=pano" em terrenos offroad isolados e exibe um erro de tela preta. O usuário pode clicar nas linhas azuis mais próximas do autódromo.
+        const url = `https://www.google.com/maps?q=${pista.coordenadas[0]},${pista.coordenadas[1]}&layer=c&z=16`;
         btnStreetView.href = url;
+    }
+    
+    // FETCH API CLIMA (Open-Meteo)
+    if (weatherWidget) {
+        weatherWidget.classList.add('hidden');
+        weatherIcon.textContent = "⏳";
+        weatherTemp.textContent = "--°C";
+        weatherDesc.textContent = "Buscando...";
+        
+        const lat = pista.coordenadas[0];
+        const lon = pista.coordenadas[1];
+        try {
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+            const data = await res.json();
+            if (data && data.current_weather) {
+                const w = data.current_weather;
+                weatherTemp.textContent = Math.round(w.temperature) + "°C";
+                
+                // Decode WMO Weather code
+                let i = "☁️", d = "Nublado";
+                if (w.weathercode === 0) { i = "☀️"; d = "Limpo"; }
+                else if (w.weathercode >= 1 && w.weathercode <= 3) { i = "⛅"; d = "P. Nublado"; }
+                else if (w.weathercode >= 51 && w.weathercode <= 67) { i = "🌧️"; d = "Chuva Fina"; }
+                else if (w.weathercode >= 80 && w.weathercode <= 82) { i = "⛈️"; d = "Pancadas"; }
+                else if (w.weathercode >= 71 || w.weathercode === 85 || w.weathercode === 86) { i = "❄️"; d = "Neve"; }
+                else if (w.weathercode >= 95) { i = "⚡"; d = "Tempestade"; }
+                
+                weatherIcon.textContent = i;
+                weatherDesc.textContent = d;
+                weatherWidget.classList.remove('hidden');
+            }
+        } catch (e) {
+            console.error("Erro no Clima:", e);
+        }
     }
     
     // Carousel
@@ -282,25 +393,28 @@ async function abrirPainel(pista) {
         carousel.classList.add('loading');
         
         try {
-            // Em vez de busca genérica que traz lixo (ex: livros sobre "drift"), forçamos busca por frase exata
-            let hasRaceKeywords = /(circuit|speedway|raceway|park|ring|motor)/i.test(pista.nome);
+            // Limpa sufixos e parenteses do nome da pista
+            const cleanNome = pista.nome.replace(/\s*\(.*?\)\s*/g, '').trim();
             
-            // Tentativa 1: Nome exato, forçando como frase entre aspas
-            let fetched = await fetchCommonsImages(`"${pista.nome}"`, 3);
+            // Tentativa 1: Nome limpo + "drift" para garantir contexto do esporte
+            let fetched = await fetchCommonsImages(`"${cleanNome}" drift`, 3);
             
-            // Tentativa 2: Nome exato + campeonato
+            // Tentativa 2: Nome exato limpo como frase restrita (evita broad match de cidade)
             if (!fetched || fetched.length === 0) {
-                fetched = await fetchCommonsImages(`"${pista.nome}" ${pista.campeonato}`, 3);
+                fetched = await fetchCommonsImages(`"${cleanNome}"`, 3);
             }
             
-            // Tentativa 3: Se não tiver keywords de corrida no nome, tenta com "circuit" ou "speedway"
+            // Tentativa 3: Nome limpo + circuit/speedway/park (em ultimo caso F1/NASCAR)
             if (!fetched || fetched.length === 0) {
-                if (!hasRaceKeywords) {
-                    fetched = await fetchCommonsImages(`"${pista.nome}" circuit`, 3);
-                    if (!fetched || fetched.length === 0) {
-                        fetched = await fetchCommonsImages(`"${pista.nome}" speedway`, 3);
-                    }
+                fetched = await fetchCommonsImages(`"${cleanNome}" circuit`, 3);
+                if (!fetched || fetched.length === 0) {
+                    fetched = await fetchCommonsImages(`"${cleanNome}" park`, 3);
                 }
+            }
+            
+            // Tentativa 4: Último caso absoluto de ampla requisição sem aspas caso não haja nada (fallback supremo)
+            if (!fetched || fetched.length === 0) {
+                fetched = await fetchCommonsImages(`${cleanNome}`, 3);
             }
             
             if (fetched && fetched.length > 0) currentImages = fetched;
@@ -471,3 +585,24 @@ async function fetchCommonsImages(query, limit = 3) {
     commonsCache.set(query, null);
     return null;
 }
+
+// === VERIFICAÇÃO DE DEEP LINK INICIAL ===
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const deepTrackId = params.get('track');
+    
+    if (deepTrackId) {
+        const foundTrack = pistas.find(p => p.id === deepTrackId);
+        if (foundTrack) {
+            // Remove parameter from URL sem scrollar pag
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path:newUrl},'',newUrl);
+            
+            // Fly to
+            setTimeout(() => {
+                map.flyTo(foundTrack.coordenadas, 14, { duration: 1.5 });
+                abrirPainel(foundTrack);
+            }, 800);
+        }
+    }
+});

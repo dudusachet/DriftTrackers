@@ -8,7 +8,7 @@ const pistas = [
     {
         id: 'long_beach', nome: "Streets of Long Beach", localizacao: "Long Beach, CA, EUA",
         campeonato: "Formula Drift",
-        coordenadas: [33.7660, -118.1924],
+        coordenadas: [33.7634, -118.1923],
         descricao: "Pista de rua icônica, usada para a abertura da Formula Drift. O percurso é técnico, cercado por muros de concreto, e é considerado o evento mais prestigiado do calendário.",
         ultimoEvento: "Formula Drift PRO (Round 1) - Abril 2025", ultimoVencedor: "Fredric Aasbo"
     },
@@ -29,28 +29,28 @@ const pistas = [
     {
         id: 'orlando', nome: "Orlando Speed World", localizacao: "Orlando, FL, EUA",
         campeonato: "Formula Drift",
-        coordenadas: [28.5367, -81.2065],
+        coordenadas: [28.5385, -81.0118],
         descricao: "O primeiro oval 'banked' (inclinado) da temporada da Formula Drift. Combates intensos sob o calor da Flórida.",
         ultimoEvento: "Formula Drift PRO (Round 3) - 2025", ultimoVencedor: "Chelsea DeNofa"
     },
     {
         id: 'englishtown', nome: "Englishtown Raceway Park", localizacao: "Englishtown, NJ, EUA",
         campeonato: "Formula Drift",
-        coordenadas: [40.3515, -74.3704],
+        coordenadas: [40.3302, -74.3541],
         descricao: "A única arena construída especificamente para o drift nos EUA. Paredes de concreto próximas e público vibrante.",
         ultimoEvento: "Formula Drift PRO (Round 4) - Junho 2025", ultimoVencedor: "Adam LZ"
     },
     {
         id: 'st_louis', nome: "World Wide Technology Raceway", localizacao: "Madison, IL, EUA",
         campeonato: "Formula Drift",
-        coordenadas: [38.6472, -90.0965],
+        coordenadas: [38.6508, -90.1364],
         descricao: "Pista conhecida pelo layout rápido e fluido dentro do 'infield' de um oval da NASCAR. Entradas de altíssima velocidade.",
         ultimoEvento: "Formula Drift PRO (Round 5) - 2025", ultimoVencedor: "Dylan Hughes"
     },
     {
         id: 'evergreen', nome: "Evergreen Speedway", localizacao: "Monroe, WA, EUA",
         campeonato: "Formula Drift",
-        coordenadas: [47.8545, -121.9649],
+        coordenadas: [47.8595, -121.9702],
         descricao: "Uma das pistas mais antigas da Formula Drift. Famosa pelo seu 'bank' inclinado e entradas de alta velocidade entre as montanhas do estado de Washington.",
         ultimoEvento: "Formula Drift PRO (Round 6) - 2025", ultimoVencedor: "Simen Olsen"
     },
@@ -95,7 +95,7 @@ const pistas = [
         id: 'las_vegas', nome: "Las Vegas Motor Speedway",
         campeonato: "Formula Drift",
         localizacao: "Las Vegas, NV, EUA",
-        coordenadas: [36.2717, -115.0107],
+        coordenadas: [36.2730, -115.0103],
         descricao: "O famoso speedway de Las Vegas. O layout de drift aproveita seções do oval e do 'infield', criando combates sob as luzes de neon.",
         ultimoEvento: "Formula Drift PRO (Evento Passado)", ultimoVencedor: "N/A"
     },
@@ -120,7 +120,7 @@ const pistas = [
     {
         id: 'ebisu', nome: "Ebisu Circuit (Minami)", localizacao: "Nihonmatsu, Japão",
         campeonato: "D1GP",
-        coordenadas: [37.6974, 140.5180],
+        coordenadas: [37.6965, 140.5186],
         descricao: "A 'Meca' do drift. Um complexo com múltiplas pistas, famoso pela Minami (sul) que tem um salto na entrada. Local sagrado para todo drifter.",
         ultimoEvento: "D1GP 2025 (Round 5 & 6)", ultimoVencedor: "Ryu Nakamura"
     },
@@ -148,7 +148,7 @@ const pistas = [
     {
         id: 'odaiba', nome: "Odaiba Special Stage", localizacao: "Tokyo, Japão",
         campeonato: "D1GP",
-        coordenadas: [35.6282, 139.7750],
+        coordenadas: [35.6215, 139.7758],
         descricao: "Evento espetacular na ilha artificial de Odaiba, na Baía de Tóquio. Pista temporária com a Rainbow Bridge e o skyline de Tokyo como cenário. A grande final do D1GP.",
         ultimoEvento: "D1GP 2025 (Round 9 & 10) - Final", ultimoVencedor: "N/A"
     },
@@ -194,21 +194,21 @@ const pistas = [
     {
         id: 'riga', nome: "Biķernieku Trase", localizacao: "Riga, Letônia",
         campeonato: "Drift Masters",
-        coordenadas: [56.9663, 24.2311],
+        coordenadas: [56.9668, 24.2290],
         descricao: "Uma das pistas mais rápidas e assustadoras do Drift Masters. Curvas de altíssima velocidade entre as árvores da Letônia.",
         ultimoEvento: "Drift Masters 2025 (Round 5)", ultimoVencedor: "Piotr Wiecek"
     },
     {
         id: 'mondello', nome: "Mondello Park", localizacao: "Co. Kildare, Irlanda",
         campeonato: "Drift Masters",
-        coordenadas: [53.2756, -6.7573],
+        coordenadas: [53.2580, -6.7490],
         descricao: "O coração do drift irlandês. Uma pista técnica que formou campeões como James Deane e os irmãos Shanahan.",
         ultimoEvento: "Drift Masters 2025 (Round 4)", ultimoVencedor: "Piotr Wiecek"
     },
     {
         id: 'warsaw', nome: "PGE Narodowy (Estádio)", localizacao: "Warsaw, Polônia",
         campeonato: "Drift Masters",
-        coordenadas: [52.2387, 21.0452],
+        coordenadas: [52.2390, 21.0458],
         descricao: "Espetáculo único. Pista customizada dentro do estádio nacional da Polônia. Recordista mundial de público em evento de drift!",
         ultimoEvento: "Drift Masters Grand Finale 2025", ultimoVencedor: "Conor Shanahan"
     },
@@ -259,7 +259,7 @@ const pistas = [
         id: 'kehala_ring', nome: "Kehala Ring",
         campeonato: "Drift Masters",
         localizacao: "Kehala, Estônia",
-        coordenadas: [59.3400, 26.5180],
+        coordenadas: [59.3278, 26.5654],
         descricao: "Pista técnica e rápida no norte da Europa, misturando asfalto e seções de rallycross para o Drift Masters.",
         ultimoEvento: "Drift Masters", ultimoVencedor: "N/A"
     },
@@ -267,7 +267,7 @@ const pistas = [
         id: 'rabocsiring', nome: "Rabócsiring",
         campeonato: "Drift Masters",
         localizacao: "Máriapócs, Hungria",
-        coordenadas: [48.0180, 22.1480],
+        coordenadas: [47.8698, 22.0294],
         descricao: "Pista húngara clássica, 'casa' de muitos eventos europeus de drift. Público fanático e traçado desafiador.",
         ultimoEvento: "Drift Masters", ultimoVencedor: "N/A"
     },
@@ -403,7 +403,7 @@ const pistas = [
         id: 'pathum_thani', nome: "Pathum Thani Speedway",
         campeonato: "Regional",
         localizacao: "Pathum Thani, Tailândia",
-        coordenadas: [14.1147, 100.5661],
+        coordenadas: [14.0725, 100.7061],
         descricao: "Speedway reconhecido na cena de drift tailandesa. A Tailândia tem uma cultura de drift em rápido crescimento.",
         ultimoEvento: "Thailand Drift Series", ultimoVencedor: "N/A"
     },
@@ -411,7 +411,7 @@ const pistas = [
         id: 'kaeng_krachan', nome: "Kaeng Krachan Circuit",
         campeonato: "Regional",
         localizacao: "Phetchaburi, Tailândia",
-        coordenadas: [12.9419, 99.7069],
+        coordenadas: [12.8790, 99.6430],
         descricao: "Um dos circuitos permanentes mais importantes da Tailândia. Traçado desafiador e infraestrutura moderna para drift.",
         ultimoEvento: "Thailand Drift Championship", ultimoVencedor: "N/A"
     },
@@ -477,7 +477,7 @@ const pistas = [
         id: 'interlagos_drift', nome: "Autódromo de Interlagos",
         campeonato: "Regional",
         localizacao: "São Paulo, SP, Brasil",
-        coordenadas: [-23.7040, -46.6975],
+        coordenadas: [-23.7010, -46.6970],
         descricao: "A pista mais famosa do Brasil. Eventos de drift ocorrem no Kartódromo ou em seções adaptadas como o 'S do Senna'.",
         ultimoEvento: "Super Drift Brasil / Eventos Especiais", ultimoVencedor: "N/A"
     },
@@ -485,11 +485,10 @@ const pistas = [
         id: 'velopark_drift', nome: "Velopark",
         campeonato: "Regional",
         localizacao: "Nova Santa Rita, RS, Brasil",
-        coordenadas: [-29.8222, -51.3200],
+        coordenadas: [-29.8225, -51.3190],
         descricao: "Um dos complexos automobilísticos mais modernos do país. Sedia etapas do campeonato gaúcho e brasileiro de drift.",
         ultimoEvento: "Etapa Ultimate Drift (Sul)", ultimoVencedor: "N/A"
     }
 ];
 
 // Disponibiliza o array 'pistas' para ser importado por outros arquivos
-export default pistas;

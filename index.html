@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriftTrackers — Mapa Mundial de Pistas de Drift</title>
-    <meta name="description" content="Mapa interativo com todas as pistas famosas de drift do mundo. Formula Drift, D1GP, Drift Masters, King of Nations, Gatebil e mais.">
+    <meta name="description"
+        content="Mapa interativo com todas as pistas famosas de drift do mundo. Formula Drift, D1GP, Drift Masters, King of Nations, Gatebil e mais.">
 
     <link rel="icon" href="assets/icon.jpg" type="image/svg+xml">
     <link rel="icon" href="assets/preview_github.png" type="image/png" sizes="32x32">
@@ -12,12 +14,16 @@
     <meta name="theme-color" content="#0a0a0f">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin="" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Animatted Toast Notifications -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
+
 <body>
 
     <!-- CONTROLES SUPERIORES -->
@@ -28,7 +34,8 @@
         </div>
         <div id="search-wrapper">
             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
             </svg>
             <input type="text" id="search-input" placeholder="Buscar pista..." autocomplete="off">
             <ul id="search-results" class="hidden"></ul>
@@ -61,6 +68,9 @@
         </button>
         <button class="filter-chip" data-filter="Regional">
             <span class="chip-dot" style="background:#78909c"></span> Regional
+        </button>
+        <button class="filter-chip" data-filter="Favorites">
+            <span class="chip-dot" style="background:#ff4081; box-shadow: 0 0 8px #ff4081;"></span> 🌟 Meus Favoritos
         </button>
     </div>
 
@@ -104,24 +114,41 @@
         </div>
 
         <div id="panel-badge"></div>
-        <h2 id="panel-title"></h2>
+
+        <div class="panel-header-actions">
+            <h2 id="panel-title"></h2>
+            <div class="action-buttons">
+                <button id="btn-favorite" class="icon-btn" title="Salvar na Garagem">🤍</button>
+                <button id="btn-share" class="icon-btn" title="Compartilhar Link">🔗</button>
+            </div>
+        </div>
+
         <p id="panel-location"></p>
-        
+
         <div class="winner-info">
             <h3 id="panel-event"></h3>
             <p>Último Vencedor: <strong id="panel-winner"></strong></p>
         </div>
 
         <p id="panel-desc"></p>
-        
-        <a id="btn-streetview" class="btn-streetview hidden" href="#" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/>
-                <circle cx="12" cy="10" r="3"/>
-            </svg>
-            Explorar no Street View
-        </a>
-        
+
+        <div class="side-by-side-buttons">
+            <a id="btn-streetview" class="btn-streetview hidden" href="#" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                </svg>
+                Street View
+            </a>
+            <div id="weather-widget" class="weather-widget hidden">
+                <div class="weather-icon" id="weather-icon">--</div>
+                <div class="weather-info">
+                    <span id="weather-temp">--°C</span>
+                    <span id="weather-desc">Carregando...</span>
+                </div>
+            </div>
+        </div>
+
         <div id="video-container"></div>
     </div>
 
@@ -134,22 +161,24 @@
         <p id="lightbox-credit"></p>
     </div>
 
-<footer id="main-footer">
-    <span>© 2025 | Desenvolvido por Eduardo Sachet</span>
-</footer>
+    <footer id="main-footer">
+        <span>© 2026 | Desenvolvido por Eduardo Sachet</span>
+    </footer>
 
-<!-- BOTAO ROLETAV / PISTA ALEATÓRIA -->
-<button id="btn-roulette" aria-label="Descobrir pista aleatória" title="Pista Aleatória!">🎲</button>
+    <!-- BOTAO ROLETAV / PISTA ALEATÓRIA -->
+    <button id="btn-roulette" aria-label="Descobrir pista aleatória" title="Pista Aleatória!">🎲</button>
 
-<!-- OVERLAY DA ROLETA -->
-<div id="roulette-overlay" class="hidden">
-    <div id="roulette-text">Buscando Destino...</div>
-</div>
+    <!-- OVERLAY DA ROLETA -->
+    <div id="roulette-overlay" class="hidden">
+        <div id="roulette-text">Buscando Destino...</div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-    <script src="app.js" type="module"></script>
+    <script src="tracks.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>

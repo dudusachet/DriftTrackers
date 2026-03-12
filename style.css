@@ -159,8 +159,24 @@ body {
     border-radius: 20px; font-size: 0.7rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.05em;
 }
-#info-panel h2 { font-size: 1.6rem; font-weight: 800; color: #fff; margin: 0 20px 4px; letter-spacing: -0.02em; }
 #info-panel p { font-size: 0.9rem; line-height: 1.6; margin: 0 20px 12px; }
+
+/* Panel Header Actions (Title + Fav/Share) */
+.panel-header-actions {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 0 20px 4px; gap: 12px;
+}
+.panel-header-actions h2 { margin: 0 !important; font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+.action-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+.icon-btn {
+    width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05); color: #fff; font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+.icon-btn.active.fav { color: #ff4081; text-shadow: 0 0 8px rgba(255,64,129,0.6); border-color: rgba(255,64,129,0.3); background: rgba(255,64,129,0.1); }
+.icon-btn.active.fav::after { content: "❤️"; position: absolute; } /* troca coracao branco por vermelho */
+
 #panel-location { font-style: italic; color: var(--text-muted); font-size: 0.85rem !important; }
 .winner-info { background: var(--bg-card); border-radius: var(--radius); padding: 14px 16px; margin: 0 20px 16px; border-left: 3px solid var(--accent); }
 .winner-info h3 { font-size: 0.95rem; color: var(--text); margin-bottom: 4px; font-weight: 600; }
@@ -309,17 +325,36 @@ body {
     100% { transform: scale(1.5); opacity: 0; }
 }
 
-/* === BOTÃO STREET VIEW === */
-.btn-streetview {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: calc(100% - 40px); margin: 0 20px 24px; padding: 12px;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px; color: #fff; font-weight: 600; font-size: 0.9rem;
-    cursor: pointer; transition: all 0.2s;
-    text-decoration: none;
+/* === BOTOES RODAPE (STREET VIEW E CLIMA) === */
+.side-by-side-buttons {
+    display: flex; gap: 12px; margin: 0 20px 32px;
 }
-.btn-streetview:hover {
-    background: rgba(74,127,247,0.15); border-color: var(--accent);
+.btn-streetview {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; color: #fff; font-weight: 600; font-size: 0.85rem;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+}
+.btn-streetview:hover { background: rgba(74,127,247,0.15); border-color: var(--accent); }
+
+.weather-widget {
+    flex: 1; display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; background: rgba(16, 24, 40, 0.6);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+}
+.weather-widget.hidden { display: none; }
+.weather-icon { font-size: 1.6rem; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.weather-info { display: flex; flex-direction: column; }
+#weather-temp { font-weight: 800; font-size: 1rem; color: #fff; line-height: 1.2; }
+#weather-desc { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+/* === TOAST NOTIFICATIONS (Toastify override) === */
+.toastify {
+    background: rgba(16,24,40,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(74,127,247,0.3); border-left: 4px solid var(--accent);
+    border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
+    color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.4); padding: 12px 20px;
 }
 
 /* === ANIMAÇÕES EM CASCATA === */
